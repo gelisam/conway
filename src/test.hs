@@ -13,6 +13,11 @@ data ListZipper a = ListZipper { list :: [a]
 runList :: (ListZipper a -> ListZipper b) -> [a] -> [b]
 runList f = list . f . flip ListZipper 0
 
+shift :: Int -> ListZipper a -> ListZipper a
+shift i (z@ListZipper{..}) = z { index = index' `mod` n } where
+  n = length list
+  index' = n + i
+
 instance Indexable ListZipper Int where
   ListZipper {..} ! i = list !! i' where
     i' = (index + i) `mod` length list
@@ -22,10 +27,10 @@ instance Functor ListZipper where
 
 instance Comonad ListZipper where
   extract z = z ! (0::Int)
-  extend f (z@ListZipper{..}) = z { list = list' } where
-    n = length list
+  extend f z = z { list = list' } where
+    n = (length . list) z
     range = take n [0..]
-    list' = map (f . ListZipper list) range
+    list' = map (f . flip shift z) range
 
 
 conway1 :: ListZipper Char -> Char
