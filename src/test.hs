@@ -1,6 +1,7 @@
 {-# OPTIONS -XRecordWildCards -XMultiParamTypeClasses #-}
 import Control.Monad
 import Control.Comonad
+import Data.Functor.Identity
 
 class Indexable m i where
   (!) :: m a -> i -> a
@@ -46,5 +47,58 @@ conway1 z = case count of
 step :: ListZipper Char -> ListZipper Char
 step = extend conway1
 
-main = forM_ (take 20 $ iterate (step.) id) $ \steps -> do
-         print $ runList steps "   #   "
+
+
+newtype ListZipperT w a = ListZipperT {
+  runZipperT :: w (ListZipper a)
+}
+
+runListT :: (ListZipperT Identity a -> ListZipperT Identity b) -> [a] -> [b]
+runListT f = list
+           . extract
+           . runZipperT
+           . f
+           . ListZipperT
+           . Identity
+           . flip ListZipper 0
+
+shiftT :: Functor w => Int -> ListZipperT w a -> ListZipperT w a
+shiftT i = ListZipperT . fmap (shift i) . runZipperT
+
+instance Comonad w => Indexable (ListZipperT w) Int where
+  z ! i = xs !! i' where
+    ListZipper xs index = (extract . runZipperT) z
+    i' = (index + i) `mod` length xs
+
+instance Functor w => Functor (ListZipperT w) where
+  fmap f = ListZipperT . (fmap . fmap) f . runZipperT
+
+instance Comonad w => Comonad (ListZipperT w) where
+  extract = extract . extract . runZipperT
+  extend f = ListZipperT . extend' f' . runZipperT where
+    f' = f . ListZipperT
+    extend' = extend . shifted
+    shifted f wz = ListZipper xs' i where
+      ListZipper xs i = extract wz
+      n = length xs
+      range = take n [0..]
+      xs' = map shifted_f range
+      shifted_f i = f $ fmap (shift i) wz
+
+
+conwayT :: ListZipperT Identity Char -> Char
+conwayT z = case count of
+              1 -> '#'
+              _ -> ' '
+            where
+  indices :: [Int]
+  indices = [-1,1]
+  neighbours = map (z!) indices
+  count = length $ filter (/= ' ') neighbours
+
+stepT :: ListZipperT Identity Char -> ListZipperT Identity Char
+stepT = extend conwayT
+
+
+main = forM_ (take 20 $ iterate (stepT.) id) $ \steps -> do
+         print $ runListT steps "   #   "
