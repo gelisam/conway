@@ -1,6 +1,7 @@
 {-# OPTIONS -XRecordWildCards -XMultiParamTypeClasses #-}
 import Control.Monad
 import Control.Comonad
+import Control.Comonad.Trans.Class
 import Data.Functor.Identity
 
 class Indexable m i where
@@ -84,6 +85,9 @@ instance Comonad w => Comonad (ListZipperT w) where
       range = take n [0..]
       xs' = map shifted_f range
       shifted_f i = f $ fmap (shift i) wz
+
+instance ComonadTrans ListZipperT where
+  lower = fmap extract . runZipperT
 
 
 conwayT :: ListZipperT Identity Char -> Char
