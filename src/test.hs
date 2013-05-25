@@ -141,8 +141,11 @@ step2 :: ZZ Char -> ZZ Char
 step2 = extend conway2
 
 
-main = forM_ (take 20 $ iterate (step2.) id) $ \steps -> do
-         putStrLn "======="
+clear :: IO ()
+clear = putStr "\x1B[2J\x1B[;H"
+
+main = forM_ (iterate (step2.) id) $ \steps -> do
+         clear
          mapM_ putStrLn $ runList2 steps [" #     ",
                                           "  #    ",
                                           "###    ",
