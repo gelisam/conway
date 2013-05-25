@@ -115,14 +115,16 @@ instance Show a => Show (ZZ a) where
 instance Indexable (ListZipperT ListZipper) (Int, Int) where
   z ! (x, y) = extract $ extract $ shift y $ runZipperT $ shiftT x z
 
+
+fromList2 :: [[a]] -> ZZ a
+fromList2 = ListZipperT . fmap (flip ListZipper 0) . flip ListZipper 0
+
+toList2 :: ZZ a -> [[a]]
+toList2 = list . fmap list . runZipperT
+
 runList2 :: (ZZ a -> ZZ b) -> [[a]] -> [[b]]
-runList2 f = list
-           . fmap list
-           . runZipperT
-           . f
-           . ListZipperT
-           . fmap (flip ListZipper 0)
-           . flip ListZipper 0
+runList2 f = toList2 . f . fromList2
+
 
 conway2 :: ZZ Char -> Char
 conway2 z = case count of
