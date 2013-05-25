@@ -20,7 +20,7 @@ runList f = list . f . flip ListZipper 0
 shift :: Int -> ListZipper a -> ListZipper a
 shift i (z@ListZipper{..}) = z { index = index' `mod` n } where
   n = length list
-  index' = n + i
+  index' = index + i
 
 instance Indexable ListZipper Int where
   ListZipper {..} ! i = list !! i' where
