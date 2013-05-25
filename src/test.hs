@@ -1,4 +1,4 @@
-{-# OPTIONS -XRecordWildCards -XMultiParamTypeClasses #-}
+{-# OPTIONS -XRecordWildCards -XMultiParamTypeClasses -XFlexibleInstances #-}
 import Control.Monad
 import Control.Comonad
 import Control.Comonad.Trans.Class
@@ -106,5 +106,45 @@ stepT :: ListZipperT Identity Char -> ListZipperT Identity Char
 stepT = extend conwayT
 
 
-main = forM_ (take 20 $ iterate (stepT.) id) $ \steps -> do
-         print $ runListT steps "   #   "
+type ZZ a = ListZipperT ListZipper a
+
+instance Show a => Show (ZZ a) where
+  show = show . runZipperT
+
+instance Indexable (ListZipperT ListZipper) (Int, Int) where
+  z ! (x, y) = extract $ extract $ shift y $ runZipperT $ shiftT x z
+
+runList2 :: (ZZ a -> ZZ b) -> [[a]] -> [[b]]
+runList2 f = list
+           . fmap list
+           . runZipperT
+           . f
+           . ListZipperT
+           . fmap (flip ListZipper 0)
+           . flip ListZipper 0
+
+conway2 :: ZZ Char -> Char
+conway2 z = case count of
+              2 -> extract z
+              3 -> '#'
+              _ -> ' '
+            where
+  ListZipper zs y = runZipperT z
+  ListZipper xs x = zs !! y
+  indices :: [(Int, Int)]
+  indices = [(x, y) | x <- [-1..1], y <- [-1..1]
+                    , (x, y) /= (0, 0)]
+  neighbours = map (z!) indices
+  count = length $ filter (/= ' ') neighbours
+
+step2 :: ZZ Char -> ZZ Char
+step2 = extend conway2
+
+
+main = forM_ (take 20 $ iterate (step2.) id) $ \steps -> do
+         putStrLn "======="
+         mapM_ putStrLn $ runList2 steps [" #     ",
+                                          "  #    ",
+                                          "###    ",
+                                          "       ",
+                                          "       "]
