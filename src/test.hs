@@ -147,11 +147,18 @@ step2 = extend conway2
 clear :: IO ()
 clear = putStr "\x1B[2J\x1B[;H"
 
-main = forM_ (iterate (step2.) id) $ \steps -> do
+glider :: ZZ Char
+glider = fromList2 [" #     ",
+                    "  #    ",
+                    "###    ",
+                    "       ",
+                    "       "]
+
+glider_animation :: [ZZ Char]
+glider_animation = helper glider where
+  helper z = z:helper (step2 z)
+
+main = forM_ glider_animation $ \screen -> do
          clear
-         usleep 100000
-         mapM_ putStrLn $ runList2 steps [" #     ",
-                                          "  #    ",
-                                          "###    ",
-                                          "       ",
-                                          "       "]
+         -- usleep 100000
+         mapM_ putStrLn $ toList2 screen
