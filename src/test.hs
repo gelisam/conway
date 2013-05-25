@@ -3,6 +3,8 @@ import Control.Monad
 import Control.Comonad
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
+import Debug.Trace
+
 
 class Indexable m i where
   (!) :: m a -> i -> a
@@ -10,7 +12,7 @@ class Indexable m i where
 
 data ListZipper a = ListZipper { list :: [a]
                                , index :: Int
-                               }
+                               } deriving Show
 
 runList :: (ListZipper a -> ListZipper b) -> [a] -> [b]
 runList f = list . f . flip ListZipper 0
