@@ -3,6 +3,7 @@ import Control.Monad
 import Control.Comonad
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
+import System.Posix.Unistd
 import Debug.Trace
 
 
@@ -146,6 +147,7 @@ clear = putStr "\x1B[2J\x1B[;H"
 
 main = forM_ (iterate (step2.) id) $ \steps -> do
          clear
+         usleep 100000
          mapM_ putStrLn $ runList2 steps [" #     ",
                                           "  #    ",
                                           "###    ",
