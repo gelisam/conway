@@ -3,7 +3,7 @@ import Control.Monad
 import Control.Comonad
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
-import System.Posix.Unistd
+import Control.Concurrent
 import Debug.Trace
 
 
@@ -160,5 +160,5 @@ glider_animation = helper glider where
 
 main = forM_ glider_animation $ \screen -> do
          clear
-         -- usleep 100000
+         threadDelay 100000
          mapM_ putStrLn $ toList2 screen
