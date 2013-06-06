@@ -90,6 +90,17 @@ toList :: ZZ a -> [[a]]
 toList = list . fmap list . runZipperT
 
 
+-- demonstrate how lower and extract could have been used to index
+-- along the two dimentions of the grid separately, instead of using
+-- the specialized 2D indexing above.
+
+index_horizontally :: Comonad w => Int -> ListZipperT w a -> a
+index_horizontally i = (! i) . extract . runZipperT
+
+index_vertically :: ComonadTrans t => Int -> t ListZipper a -> a
+index_vertically i = (! i) . lower
+
+
 -- the entire logic of Conway's Game of Life, in one function.
 
 conway :: ZZ Char -> Char
