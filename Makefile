@@ -16,8 +16,11 @@ bin/%: tests/%.hs
 	ghc $(CCFLAGS) -o $@ -icrumbs:src:tests -odir crumbs -hidir crumbs --make $<
 
 
-test: $(patsubst tests/%.expected,proofs/%.proof,$(shell find tests -name '*.expected'))
-	-@echo '*** ALL TESTS OK ***'
+#test: $(patsubst tests/%.expected,proofs/%.proof,$(shell find tests -name '*.expected'))
+#	-@echo '*** ALL TESTS OK ***'
+
+test: bin/test
+	./bin/test
 
 proofs/%.proof: bin/% tests/%.expected
 	$(MAKE) $<
