@@ -9,6 +9,9 @@ class Indexable m i where
   (!) :: m a -> i -> a
 
 
+-- a 1D world for cellular automata.
+-- index is the current cell, all the others are neighbours.
+
 data ListZipper a = ListZipper { list :: [a]
                                , index :: Int
                                } deriving Show
@@ -26,12 +29,17 @@ instance Functor ListZipper where
   fmap f (z@ListZipper{..}) = z { list = fmap f list }
 
 instance Comonad ListZipper where
+  -- inspect the current cell
   extract z = z ! (0::Int)
+  
+  -- run f on each cell, making each one the current cell.
   extend f z = z { list = list' } where
     n = (length . list) z
     range = take n [0..]
     list' = map (f . flip shift z) range
 
+
+-- and now, a comonad-transformer version of all the above.
 
 newtype ListZipperT w a = ListZipperT {
   runZipperT :: w (ListZipper a)
@@ -64,6 +72,8 @@ instance ComonadTrans ListZipperT where
   lower = fmap extract . runZipperT
 
 
+-- a 2D world for cellular automata.
+
 type ZZ a = ListZipperT ListZipper a
 
 instance Show a => Show (ZZ a) where
@@ -79,6 +89,8 @@ fromList = ListZipperT . fmap (flip ListZipper 0) . flip ListZipper 0
 toList :: ZZ a -> [[a]]
 toList = list . fmap list . runZipperT
 
+
+-- the entire logic of Conway's Game of Life, in one function.
 
 conway :: ZZ Char -> Char
 conway z = case count of
@@ -98,8 +110,7 @@ life_step :: ZZ Char -> ZZ Char
 life_step = extend conway
 
 
-clear :: IO ()
-clear = putStr "\x1B[2J\x1B[;H"
+-- construct an animation based on Conway's Game of Life.
 
 glider :: ZZ Char
 glider = fromList [" #     ",
@@ -111,6 +122,12 @@ glider = fromList [" #     ",
 glider_animation :: [ZZ Char]
 glider_animation = helper glider where
   helper z = z:helper (life_step z)
+
+
+-- display the above animation.
+
+clear :: IO ()
+clear = putStr "\x1B[2J\x1B[;H"
 
 main = forM_ glider_animation $ \screen -> do
          clear
