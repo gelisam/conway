@@ -109,8 +109,6 @@ conway z = case count of
              3 -> '#'
              _ -> ' '
            where
-  ListZipper zs y = runZipperT z
-  ListZipper xs x = zs !! y
   indices :: [(Int, Int)]
   indices = [(x, y) | x <- [-1..1], y <- [-1..1]
                     , (x, y) /= (0, 0)]
