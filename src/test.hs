@@ -15,9 +15,6 @@ data ListZipper a = ListZipper { list :: [a]
                                , index :: Int
                                } deriving Show
 
-runList :: (ListZipper a -> ListZipper b) -> [a] -> [b]
-runList f = list . f . flip ListZipper 0
-
 shift :: Int -> ListZipper a -> ListZipper a
 shift i (z@ListZipper{..}) = z { index = index' `mod` n } where
   n = length list
@@ -41,15 +38,6 @@ instance Comonad ListZipper where
 newtype ListZipperT w a = ListZipperT {
   runZipperT :: w (ListZipper a)
 }
-
-runListT :: (ListZipperT Identity a -> ListZipperT Identity b) -> [a] -> [b]
-runListT f = list
-           . extract
-           . runZipperT
-           . f
-           . ListZipperT
-           . Identity
-           . flip ListZipper 0
 
 shiftT :: Functor w => Int -> ListZipperT w a -> ListZipperT w a
 shiftT i = ListZipperT . fmap (shift i) . runZipperT
@@ -92,9 +80,6 @@ fromList2 = ListZipperT . fmap (flip ListZipper 0) . flip ListZipper 0
 
 toList2 :: ZZ a -> [[a]]
 toList2 = list . fmap list . runZipperT
-
-runList2 :: (ZZ a -> ZZ b) -> [[a]] -> [[b]]
-runList2 f = toList2 . f . fromList2
 
 
 conway2 :: ZZ Char -> Char
