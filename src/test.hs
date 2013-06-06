@@ -75,19 +75,19 @@ instance Indexable (ListZipperT ListZipper) (Int, Int) where
   z ! (x, y) = extract $ extract $ shift y $ runZipperT $ shiftT x z
 
 
-fromList2 :: [[a]] -> ZZ a
-fromList2 = ListZipperT . fmap (flip ListZipper 0) . flip ListZipper 0
+fromList :: [[a]] -> ZZ a
+fromList = ListZipperT . fmap (flip ListZipper 0) . flip ListZipper 0
 
-toList2 :: ZZ a -> [[a]]
-toList2 = list . fmap list . runZipperT
+toList :: ZZ a -> [[a]]
+toList = list . fmap list . runZipperT
 
 
-conway2 :: ZZ Char -> Char
-conway2 z = case count of
-              2 -> extract z
-              3 -> '#'
-              _ -> ' '
-            where
+conway :: ZZ Char -> Char
+conway z = case count of
+             2 -> extract z
+             3 -> '#'
+             _ -> ' '
+           where
   ListZipper zs y = runZipperT z
   ListZipper xs x = zs !! y
   indices :: [(Int, Int)]
@@ -96,25 +96,25 @@ conway2 z = case count of
   neighbours = map (z!) indices
   count = length $ filter (/= ' ') neighbours
 
-step2 :: ZZ Char -> ZZ Char
-step2 = extend conway2
+life_step :: ZZ Char -> ZZ Char
+life_step = extend conway
 
 
 clear :: IO ()
 clear = putStr "\x1B[2J\x1B[;H"
 
 glider :: ZZ Char
-glider = fromList2 [" #     ",
-                    "  #    ",
-                    "###    ",
-                    "       ",
-                    "       "]
+glider = fromList [" #     ",
+                   "  #    ",
+                   "###    ",
+                   "       ",
+                   "       "]
 
 glider_animation :: [ZZ Char]
 glider_animation = helper glider where
-  helper z = z:helper (step2 z)
+  helper z = z:helper (life_step z)
 
 main = forM_ glider_animation $ \screen -> do
          clear
          threadDelay 100000
-         mapM_ putStrLn $ toList2 screen
+         mapM_ putStrLn $ toList screen
