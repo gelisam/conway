@@ -38,21 +38,6 @@ instance Comonad ListZipper where
     list' = map (f . flip shift z) range
 
 
-conway1 :: ListZipper Char -> Char
-conway1 z = case count of
-              1 -> '#'
-              _ -> ' '
-            where
-  indices :: [Int]
-  indices = [-1,1]
-  neighbours = map (z!) indices
-  count = length $ filter (/= ' ') neighbours
-
-step :: ListZipper Char -> ListZipper Char
-step = extend conway1
-
-
-
 newtype ListZipperT w a = ListZipperT {
   runZipperT :: w (ListZipper a)
 }
@@ -91,20 +76,6 @@ instance Comonad w => Comonad (ListZipperT w) where
 
 instance ComonadTrans ListZipperT where
   lower = fmap extract . runZipperT
-
-
-conwayT :: ListZipperT Identity Char -> Char
-conwayT z = case count of
-              1 -> '#'
-              _ -> ' '
-            where
-  indices :: [Int]
-  indices = [-1,1]
-  neighbours = map (z!) indices
-  count = length $ filter (/= ' ') neighbours
-
-stepT :: ListZipperT Identity Char -> ListZipperT Identity Char
-stepT = extend conwayT
 
 
 type ZZ a = ListZipperT ListZipper a
