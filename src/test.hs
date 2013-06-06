@@ -2,9 +2,7 @@
 import Control.Monad
 import Control.Comonad
 import Control.Comonad.Trans.Class
-import Data.Functor.Identity
 import Control.Concurrent
-import Debug.Trace
 
 
 class Indexable m i where
