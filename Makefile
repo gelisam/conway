@@ -1,16 +1,22 @@
 NAME="$(shell basename `pwd`)"
 
-.PHONY: all build doc demo clean clobber
+.PHONY: all config build doc demo clean clobber
 
 all: build doc test
 
-build:
+config: dist/setup-config
+
+dist/setup-config:
+	cabal configure --ghc-option="-Wall" \
+	                --ghc-option="-fwarn-unused-imports"
+
+build: config
 	cabal build | cat
 
 doc:
 	find src demo -name '*.hs' | xargs haddock --odir=doc --html
 
-test:
+test: build
 	find src demo -name '*.hs' | xargs doctest
 	@echo
 
