@@ -7,14 +7,13 @@ all: build doc test
 config: dist/setup-config
 
 dist/setup-config:
-	cabal configure --ghc-option="-Wall" \
-	                --ghc-option="-fwarn-unused-imports"
+	cabal configure
 
 build: config
 	cabal build | cat
 
 doc:
-	find src demo -name '*.hs' | xargs haddock --odir=doc --html
+	find src demo -name '*.hs' | xargs haddock --no-warnings --odir=doc --html
 
 test: build
 	find src demo -name '*.hs' | xargs doctest
