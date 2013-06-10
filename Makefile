@@ -11,6 +11,7 @@ dist/setup-config:
 
 build: config
 	cabal build | cat
+	@cabal build &> /dev/null
 
 doc:
 	find src demo -name '*.hs' | xargs haddock --no-warnings --odir=doc --html
