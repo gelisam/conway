@@ -45,4 +45,7 @@ clean:
 	rm -rf proofs
 
 clobber: clean
-	rm -rf dist
+	rm -rf dist doc
+
+distclean: clobber
+	rm -rf cabal-dev
