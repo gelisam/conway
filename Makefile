@@ -7,20 +7,21 @@ all: build doc test
 config: dist/setup-config
 
 dist/setup-config:
-	cabal configure
+	cabal-dev install-deps
+	cabal-dev configure
 
 build: config
-	cabal build | cat
-	@cabal build &> /dev/null
+	cabal-dev build | cat
+	@cabal-dev build &> /dev/null
 
-doc:
-	find src demo -name '*.hs' | xargs haddock --no-warnings --odir=doc --html
+doc: build
+	find src demo -name '*.hs' | xargs haddock --optghc='-package-db '"$$(ls -d cabal-dev/packages-*.conf)" --no-warnings --odir=doc --html
 
 
 test: small-tests big-tests
 
 small-tests: build
-	find src demo -name '*.hs' | xargs doctest
+	find src demo -name '*.hs' | xargs doctest -package-db "$$(ls -d cabal-dev/packages-*.conf)"
 	@echo
 
 
