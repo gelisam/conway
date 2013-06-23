@@ -24,15 +24,15 @@ Extra-source-files:  README.md,
 Library
   hs-source-dirs: src
   
-  Exposed-modules:     Math.Fib
+  Exposed-modules:     Conway
   -- Other-modules:       
   
-  Build-depends:       base >= 4 && < 5
+  Build-depends:       base >= 4 && < 5,
+                       comonad >= 3.0 && < 4,
+                       comonad-transformers >= 0.1.1 && < 4
 
 executable conway-demo
   build-depends:  base >= 4 && < 5,
-                  conway >= 0.1 && < 1,
-                  comonad >= 3.0 && < 4,
-                  comonad-transformers >= 0.1.1 && < 4
+                  conway >= 0.1 && < 1
   main-is:        Main.hs
   hs-source-dirs: demo
