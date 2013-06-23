@@ -1,6 +1,14 @@
 Comonad-Transformers Demo
 =========================
 
+    > ./conway-demo
+     #     
+      #    
+    ###    
+             
+             
+    (animates forever, press Ctrl-C to stop)
+
 If a comonad is an environment for cellular automata, then a comonad transformer adds an axis to that environment.
 
 In this demo, we first construct a comonad representing a 1D neighborhood. We then write a slightly more complicated version which adds an extra 1D neighborhood to an existing comonad: that is our comonad transformer. If we apply the 1D neighborhood transformer to another 1D neighborhood, we obtain a 2D neighborhood.
