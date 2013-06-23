@@ -118,6 +118,9 @@ conway z = case count of
 life_step :: ZZ Char -> ZZ Char
 life_step = extend conway
 
+life_animation :: ZZ Char -> [ZZ Char]
+life_animation = iterate life_step
+
 
 -- construct an animation based on Conway's Game of Life.
 
@@ -129,16 +132,24 @@ glider = fromList [" #     ",
                    "       "]
 
 glider_animation :: [ZZ Char]
-glider_animation = helper glider where
-  helper z = z:helper (life_step z)
+glider_animation = life_animation glider
 
 
--- display the above animation.
+-- display such an animation.
 
 clear :: IO ()
 clear = putStr "\x1B[2J\x1B[;H"
 
-main = forM_ glider_animation $ \screen -> do
-         clear
-         threadDelay 100000
-         mapM_ putStrLn $ toList screen
+display_animation :: [ZZ Char] -> IO ()
+display_animation = mapM_ $ \screen -> do
+                      clear
+                      threadDelay 100000
+                      mapM_ putStrLn $ toList screen
+
+animate :: ZZ Char -> IO ()
+animate = display_animation . life_animation
+
+
+-- display the glider animation.
+
+main = animate glider
