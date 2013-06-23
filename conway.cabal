@@ -1,0 +1,38 @@
+Name:                conway
+Version:             0.1
+
+-- A short (one-line) description of the package.
+Synopsis:            A comonadic implementation of Conway's Game of Life.
+
+-- A longer description of the package.
+-- Description:         
+
+Homepage:            https://github.com/gelisam/conway
+License:             PublicDomain
+License-file:        LICENSE
+Author:              Samuel Gélineau
+Maintainer:          gelisam@gmail.com
+
+Category:            Demo
+
+Build-type:          Simple
+Cabal-version:       >=1.8
+
+Extra-source-files:  README.md,
+                     Makefile
+
+Library
+  hs-source-dirs: src
+  
+  Exposed-modules:     Math.Fib
+  -- Other-modules:       
+  
+  Build-depends:       base >= 4 && < 5
+
+executable conway-demo
+  build-depends:  base >= 4 && < 5,
+                  conway >= 0.1 && < 1,
+                  comonad >= 3.0 && < 4,
+                  comonad-transformers >= 0.1.1 && < 4
+  main-is:        Main.hs
+  hs-source-dirs: demo
