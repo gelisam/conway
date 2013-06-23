@@ -1,8 +1,8 @@
 NAME="$(shell basename `pwd`)"
 
-.PHONY: all config build doc test small-tests big-tests demo clean clobber
+.PHONY: all config build doc test small-tests demo clean clobber
 
-all: build doc test
+all: build demo
 
 config: dist/setup-config
 
@@ -18,27 +18,15 @@ doc: build
 	find src demo -name '*.hs' | xargs haddock --optghc='-package-db '"$$(ls -d cabal-dev/packages-*.conf)" --no-warnings --odir=doc --html
 
 
-test: small-tests big-tests
+test: small-tests
 
 small-tests: build
 	find src demo -name '*.hs' | xargs doctest -package-db "$$(ls -d cabal-dev/packages-*.conf)"
 	@echo
 
 
-big-tests: $(patsubst tests/%.expected,proofs/%.proof,$(shell find tests -name '*.expected'))
-	-@echo '*** ALL TESTS OK ***'
-
-proofs/%.proof: proofs/%.out tests/%.expected
-	diff $^
-	touch $@
-
-proofs/%.out: tests/%.in build
-	mkdir -p $(dir $@)
-	./dist/build/$(NAME)-demo/$(NAME)-demo < $< > $@
-
-
 demo: build
-	./dist/build/$(NAME)-demo/$(NAME)-demo < tests/hello.in
+	./dist/build/$(NAME)-demo/$(NAME)-demo
 
 
 clean:
