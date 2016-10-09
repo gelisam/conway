@@ -27,12 +27,12 @@ Library
   Exposed-modules:     Conway
   -- Other-modules:       
   
-  Build-depends:       base >= 4 && < 5,
-                       comonad >= 3.0 && < 4,
-                       comonad-transformers >= 0.1.1 && < 4
+  Build-depends:       base,
+                       comonad,
+                       comonad-transformers
 
 executable conway-demo
-  build-depends:  base >= 4 && < 5,
-                  conway >= 0.1 && < 1
+  build-depends:  base,
+                  conway
   main-is:        Main.hs
   hs-source-dirs: demo
