@@ -5,7 +5,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Conway where
 
-import Control.Monad
 import Control.Comonad
 import Control.Comonad.Trans.Class
 
@@ -65,25 +64,22 @@ instance Comonad w => Comonad (ListZipperT w) where
   extract = extract . extract . runZipperT
   
   extend :: forall a b. (ListZipperT w a -> b) -> ListZipperT w a -> ListZipperT w b
-  extend f = ListZipperT . extend' f' . runZipperT where
+  extend f = ListZipperT . extend go . runZipperT where
     f' :: w (ListZipper a) -> b
     f' = f . ListZipperT
     
-    extend' :: (w (ListZipper a) -> b) -> w (ListZipper a) -> w (ListZipper b)
-    extend' = extend . shifted
-    
-    shifted :: (w (ListZipper a) -> b) -> w (ListZipper a) -> ListZipper b
-    shifted f wz = ListZipper xs' i where
+    go :: w (ListZipper a) -> ListZipper b
+    go wz = ListZipper ys i where
       ListZipper xs i = extract wz
       
       n = length xs
       range = take n [0..]
       
-      xs' :: [b]
-      xs' = map shifted_f range
+      shifted_wzs :: [w (ListZipper a)]
+      shifted_wzs = map (\j -> fmap (shift j) wz) range
       
-      shifted_f :: Int -> b
-      shifted_f i = f $ fmap (shift i) wz
+      ys :: [b]
+      ys = map f' shifted_wzs
 
 instance ComonadTrans ListZipperT where
   lower = fmap extract . runZipperT

@@ -35,4 +35,5 @@ animate = display_animation . life_animation
 
 -- display the glider animation.
 
+main :: IO ()
 main = animate glider
