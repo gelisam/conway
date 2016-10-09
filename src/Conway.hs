@@ -1,4 +1,8 @@
-{-# OPTIONS -XRecordWildCards -XMultiParamTypeClasses -XFlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Conway where
 
 import Control.Monad
@@ -59,14 +63,26 @@ instance Functor w => Functor (ListZipperT w) where
 
 instance Comonad w => Comonad (ListZipperT w) where
   extract = extract . extract . runZipperT
+  
+  extend :: forall a b. (ListZipperT w a -> b) -> ListZipperT w a -> ListZipperT w b
   extend f = ListZipperT . extend' f' . runZipperT where
+    f' :: w (ListZipper a) -> b
     f' = f . ListZipperT
+    
+    extend' :: (w (ListZipper a) -> b) -> w (ListZipper a) -> w (ListZipper b)
     extend' = extend . shifted
+    
+    shifted :: (w (ListZipper a) -> b) -> w (ListZipper a) -> ListZipper b
     shifted f wz = ListZipper xs' i where
       ListZipper xs i = extract wz
+      
       n = length xs
       range = take n [0..]
+      
+      xs' :: [b]
       xs' = map shifted_f range
+      
+      shifted_f :: Int -> b
       shifted_f i = f $ fmap (shift i) wz
 
 instance ComonadTrans ListZipperT where
