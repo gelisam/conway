@@ -29,9 +29,11 @@ Library
   Build-depends:       base,
                        comonad,
                        comonad-transformers
+  ghc-options: -W -Wall
 
 executable conway-demo
   build-depends:  base,
                   conway
   main-is:        Main.hs
   hs-source-dirs: demo
+  ghc-options: -W -Wall
