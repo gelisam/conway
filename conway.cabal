@@ -9,7 +9,6 @@ Synopsis:            A comonadic implementation of Conway's Game of Life.
 
 Homepage:            https://github.com/gelisam/conway
 License:             PublicDomain
-License-file:        LICENSE
 Author:              Samuel Gélineau
 Maintainer:          gelisam@gmail.com
 
